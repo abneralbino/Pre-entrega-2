@@ -1,0 +1,101 @@
+<h1>Product Manager - REAL TIME PRODUCTS HANDLEBARS</h1>
+    <div class="border border-primary">
+        <div class ="col">
+        <div class="border border-primary d-flex flex-wrap">
+            <h3>Products</h3>
+            {{#each showProducts}}
+            
+            <div class="card" style="width: 12rem height:80%">
+            {{!-- <img class="card-img-top" src="" alt="Card image cap"> --}}
+            <div class="card-body">
+                <h5 class="card-title">{{this.title}}</h5>
+                <p class="card-text">Description: {{this.description}}</p>
+                <p class="card-text">Price: {{this.price}}</p>
+                <p class="card-text">Thumbnail: {{this.thumbnail}}</p>
+                <p class="card-text">Code: {{this.code}}</p>
+                <p class="card-text">Stock: {{this.stock}}</p>
+                <p class="card-text">Status: {{this.status}}</p>
+                <p class="card-text">ID: {{this.id}}</p>
+                <a href="#" class="btn btn-primary" {{!-- data-product-id="{{this.id}}" --}} onclick="deleteProduct('{{this.id}}')" id="click">Delete</a> {{!-- que cada boton delete esté asignado al ID del producto --}}
+            </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    <div class="border border-primary">
+        <h3>Add Product</h3>
+        <form class="row g-4" class="border">
+            <div class="col-md-3">
+                <label  class="form-label">Title</label>
+                <input type="text" class="form-control" id="title">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-control" id="description">
+            </div>
+            <div class="col-3">
+                <label  class="form-label">Price</label>
+                <input type="number" class="form-control" id="price">
+            </div>
+            <div class="col-3">
+                <label class="form-label">Thumbnail</label>
+                <input type="text" class="form-control" id="thumbnail">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Code</label>
+                <input type="text" class="form-control" id="code">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Stock</label>
+                <input type="number" class="form-control" id="stock">
+            </div>
+            <div class="col-md-3">
+                <label for="inputState" class="form-label">Status</label>
+                <select id="status" class="form-select">
+                    <option>True</option>
+                    <option>False</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Category</label>
+                <input type="text" class="form-control" id="category">
+            </div>
+            <div class="col-12">
+            <button type="submit" class="btn btn-primary" onclick="addProduct()" >Save</button>
+            </div>
+        </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const socket = io('http://localhost:1010');
+
+        socket.emit('event_cl01', 'CLIENT 01 TRYING TO CONNECT');
+
+        socket.on('connect', () => {
+            socket.emit('event_product', 'This is a message from products');
+            socket.on('server_confirm', (msg) => {
+                console.log('Server confirmed connection - FROM RTPHDB');
+            })
+        });
+        
+        function deleteProduct(id) {
+        socket.emit('delete_product', id);
+        console.log('DeleteProduct() function activates on click', id)
+        };
+
+        function addProduct() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const price = document.getElementById('price').value;
+            const thumbnail = document.getElementById('thumbnail').value;
+            const code = document.getElementById('code').value;
+            const stock = document.getElementById('stock').value;
+            const status = document.getElementById('status').value;
+            const category = document.getElementById('category').value;
+
+        const product = {title, description, price, thumbnail, code, stock, status, category};
+            socket.emit('add_product', product);
+            console.log('Addproduct() function activates on click', product )
+        };
+        
+    </script>

@@ -1,0 +1,84 @@
+
+<h1>Product Manager - Home handlebars</h1>
+    <div class="border border-primary">
+        <div>
+        <div class="border border-primary">
+            <h3>Products</h3>
+            {{#each showProducts}}
+            
+            <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="data:image/jpeg;base64,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" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{this.title}}</h5>
+                <p class="card-text">Description: {{this.description}}</p>
+                <p class="card-text">Price: {{this.price}}</p>
+                <p class="card-text">Thumbnail: {{this.thumbnail}}</p>
+                <p class="card-text">Code: {{this.code}}</p>
+                <p class="card-text">Stock: {{this.stock}}</p>
+                <p class="card-text">Status: {{this.status}}</p>
+                <p class="card-text">ID: {{this.id}}</p>
+                <a href="#" class="btn btn-primary">Delete</a>
+            </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    <div class="border border-primary">
+        <h3>Add Product</h3>
+        <form class="row g-4" class="border">
+            <div class="col-md-3">
+                <label  class="form-label">Title</label>
+                <input type="text" class="form-control" id="title">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-control" id="pescription">
+            </div>
+            <div class="col-3">
+                <label  class="form-label">Price</label>
+                <input type="number" class="form-control" id="price">
+            </div>
+            <div class="col-3">
+                <label class="form-label">Thumbnail</label>
+                <input type="text" class="form-control" id="thumbnail">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Code</label>
+                <input type="text" class="form-control" id="code">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Stock</label>
+                <input type="number" class="form-control" id="code">
+            </div>
+            <div class="col-md-3">
+                <label for="inputState" class="form-label">Status</label>
+                <select id="Status" class="form-select">
+                    <option>True</option>
+                    <option>False</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Category</label>
+                <input type="text" class="form-control" id="category">
+            </div>
+            <div class="col-12">
+            <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+    
+    
+    
+    <div class="border border-primary">
+    <form>
+        <h3>Delete Product</h3>
+        <div class="col-md-3">
+            <label  class="form-label">ID to Delete</label>
+            <input type="text" class="form-control" id="idToDelete">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Delete</button>
+        </div>
+    </form>
+    </div>
+
