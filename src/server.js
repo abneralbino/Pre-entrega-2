@@ -1,5 +1,5 @@
 //Los IMPORTS
-import {} from 'dotenv/config';
+import dotenv from 'dotenv/config';
 import http from 'http';
 import express from 'express';
 import mongoose from 'mongoose';
@@ -10,6 +10,8 @@ import bodyParser from 'body-parser';
 import productsRouter from './api/products/products.routes.js';
 import cartsRouter from './api/carts/carts.routes.js';
 import handlebarsViewsRouter from './routes/views.routes.js';
+
+import ProductManagerDB from './api/products/products.dbclass.js';
 
 import { __dirname } from './utils.js';
 
@@ -45,37 +47,6 @@ io.on('connection', (socket) => {
         socket.emit('confirm', 'server.js client connection received');
     })
 
-    socket.on('product_deleted', async (id) => { // Escuchando 'delete_product' 
-        console.log(`Receiving request to delete product ${id}`);
-        let products = new ProductManager()
-
-        products.deleteProduct(parseInt(id))
-        .then(() => {
-            console.log(`Product ID ${id} successfuly removed`);
-        })
-        .catch((err) => {
-            console.log(`Error trying to delete product ID ${id}: ${err.message}`)
-        });
-        
-    });
-
-    socket.on('product_added', async (product) => {
-        console.log (`Receiving product`, product);
-
-        let products = new ProductManager()
-
-        products.addProduct(product)
-        .then(() => {
-            console.log('Product successfuly added')
-        })
-        .catch((err) => {
-            console.log(`Error when trying to add product`)
-        })
-
-        
-    });
-
-
 });
 
 app.use(bodyParser.json());
@@ -88,12 +59,14 @@ app.use('/api', handlebarsViewsRouter(io));
 
 //CONTENIDOS ESTÁTICOS
 app.use(express.static('views')); //cambiarlo a public para acceder a index.html
-app.use('/', express.static(`${__dirname}/public`));
+app.use('/', express.static(`${__dirname}/views`));
+
 
 
 //TEMPLATE ENGINE - MOTOR DE PLANTILLAS
 app.engine ('handlebars', engine());
 app.set('views', __dirname + '/views');
+app.set('views', `${__dirname} /views`);
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 
@@ -106,8 +79,6 @@ try {
     console.log('Could not connect to database server' + err);
 
 };
-
-
 
 
 export default server;

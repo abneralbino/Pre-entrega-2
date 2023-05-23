@@ -115,14 +115,14 @@ class ProductManager {
         });
     }
 
-    async deleteProduct (deleteById){ //test en postman localhost:1000/api/products/IDdel producto
+    async deleteProduct (deleteById){ //test en postman localhost:3000/api/products/IDdel producto
         const data = await fs.promises.readFile(this.path, 'utf-8');
         const products = JSON.parse(data);
 
         const deleteItemFilter = products.filter(product => product.id !== deleteById);
 
         if (deleteItemFilter.length === products.length) {
-            console.log(`Error: No se encontró producto con ID ${deleteById}`);
+            console.log(`Error: Could not find product with ID ${deleteById} -- From products.class`);
             return;
         }
 

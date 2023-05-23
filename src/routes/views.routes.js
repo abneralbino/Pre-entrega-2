@@ -1,6 +1,7 @@
-import http from 'http';
+/* import http from 'http';
 import express from 'express';
 import { Router as expressRouter } from 'express';
+import { __dirname } from '../utils.js';
 
 
 const viewsRouter = expressRouter();
@@ -9,84 +10,87 @@ const httpServer = http.createServer(appEx);
 
 
 import ProductManager from '../api/products/products.class.js';
+import ProductManagerDB from '../api/products/products.dbclass.js';
 import bodyParser from 'body-parser';
 
 import { Server } from 'socket.io';
-import server from '../server.js';
+import server from '../server.js'; */
 
-//const io = new Server(httpServer);
+import { Router } from "express";
+import ProductManagerDB from "../api/products/products.dbclass.js";
+import { __dirname } from "../utils.js";
+import bodyParser from 'body-parser';
+
+const viewsRouter = Router();
+const productManagerDB = new ProductManagerDB();
 
 
 const handlebarsViewsRouter = (io) => {
 
-const productManager = new ProductManager();
+const productManager = new ProductManagerDB();
 
-viewsRouter.use(bodyParser.urlencoded({ extended: true }));
-viewsRouter.use(express.json());
+  viewsRouter.use(bodyParser.urlencoded({ extended: true }));
+  //viewsRouter.use(express.json());
 
-let products = [];
+  let products = [];
 
+  io.on('connection', (socket) => {
+    console.log('User connected from views.routes');
+    
+    viewsRouter.get('/realtimeproducts', async (req, res) => { 
+      try {
+      await ProductManagerDB.load();
+      const showProducts = await ProductManagerDB.getProducts();
+      res.render('realTimeProducts', {showProducts});
+      console.log("realtimeproducts static endpoint is working is working" , showProducts);
+      } catch (error) {
+        res.status(500).send({error: error.message});
+      }
+    }); 
 
-viewsRouter.get('/realtimeproducts', async (req, res) => { 
-    try {
-    await productManager.load();
-    const showProducts = await productManager.getProducts();
-    res.render('realTimeProducts', {showProducts});
-    console.log("realtimeproducts static endpoint is working is working" , showProducts);
-    } catch (error) {
-      res.status(500).send({error: error.message});
-    }
-  
-}); 
-
-io.on('connection', (socket) => {
-  console.log('User connected trying to DELETE');
-
-  socket.on('delete_product', async (id) => { // Escuchando 'delete_product' 
-    const deleteProdIo = await productManager.deleteProduct(id); // Delete product por ID usando deleteProduct()
-    console.log('WHY AM I NOT SHOWING?! ROUTER');
-  });
-
-});
-
-
-io.on('delete_product', async (id) => { // Escuchando 'delete_product' 
-  console.log(`Receiving request to delete product ${id}`);
-  let products =  new ProductManager()
-
-  products.deleteProduct(parseInt(id))
-  .then(() => {
-      console.log(`Product ID ${id} successfuly deleted`);
-  })
-  .catch((err) => {
-      console.log(`Error when trying to delete ID ${id}: ${err.message}`)
-  })
-      
-  });
-
-  io.on('add_product', async (product) => {
+    /* socket.on('add_product', async (product) => {
       console.log (`Receiving product`, product);
 
-      let products = new ProductManager()
+      let products = new ProductManagerDB()
 
       products.addProduct(product)
       .then(() => {
           console.log('Product successfuly added')
+          //res.render('realTimeProducts', {products});
       })
       .catch((err) => {
           console.log(`Error when trying to add product`)
-      })
+      });
+    }); */
 
-      
+    socket.on('delete_product', async (id) => { // Escuchando 'delete_product' 
+        console.log(`Receiving request to delete product ${id}`);
+        let products =  new ProductManagerDB()
+        products.deleteProduct(parseInt(id))
+        //res.render('realTimeProducts', {products})
+        .then(() => {
+            console.log(`Product ID ${id} successfuly deleted`);
+        })
+        .catch((err) => {
+            console.log(`Error when trying to delete ID ${id}: ${err.message}`)
+        })
+    });
+
+    
+
   });
- 
 
-  
+  return handlebarsViewsRouter;
 
- viewsRouter.delete ('/realtimeproducts/:pid', async (req, res) => {
+};
+
+export default handlebarsViewsRouter;
+
+
+/* viewsRouter.delete ('/realtimeproducts/:pid', async (req, res) => {
   const deleteById = parseInt(req.params.pid);
 
-  res.send(await productManager.deleteProduct(deleteById));
+  res.send(await ProductManagerDB.deleteProduct(deleteById));
   console.log(deleteById);
 }); 
 
@@ -105,27 +109,9 @@ io.on('delete_product', async (id) => { // Escuchando 'delete_product'
   
   }
   
-  res.send(await productManager.addProduct(transport));
-  
-}); 
+  res.send(await ProductManagerDB.addProduct(transport)); */
 
-return handlebarsViewsRouter;
-
-};
-
-
-
-
-
-
-/* viewsRouter.delete ('/realtimeproducts/:pid', async (req, res) => {
-  const deleteById = parseInt(req.params.pid);
-
-  res.send(await productManager.deleteProduct(deleteById));
-  console.log(deleteById);
-}); */
-
-/* viewsRouter.post ('/realtimeproducts', async (req, res) =>{
+  /* viewsRouter.post ('/realtimeproducts', async (req, res) =>{
   const newProduct = req.body;
 
   const transport = {
@@ -144,5 +130,17 @@ return handlebarsViewsRouter;
   
 }); */
 
-export default handlebarsViewsRouter;
+/* socket.on('delete_product', async (id) => { // Escuchando 'delete_product' 
+    const deleteProdIo = await productManager.deleteProduct(id); 
+    console.log('Delete_product from views.routes activated');
+  }); */
 
+
+
+
+/* viewsRouter.delete ('/realtimeproducts/:pid', async (req, res) => {
+  const deleteById = parseInt(req.params.pid);
+
+  res.send(await productManager.deleteProduct(deleteById));
+  console.log(deleteById);
+}); */

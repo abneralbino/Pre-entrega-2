@@ -15,13 +15,35 @@
                 <p class="card-text">Code: {{this.code}}</p>
                 <p class="card-text">Stock: {{this.stock}}</p>
                 <p class="card-text">Status: {{this.status}}</p>
+                <p class="card-text">Category: {{this.category}}</p>
                 <p class="card-text">ID: {{this.id}}</p>
-                <a href="#" class="btn btn-primary" {{!-- data-product-id="{{this.id}}" --}} onclick="deleteProduct('{{this.id}}')" id="click">Delete</a> {{!-- que cada boton delete esté asignado al ID del producto --}}
+                <a class="btn btn-primary" {{!-- data-product-id="{{this.id}}" --}} onclick="deleteProduct('{{this.id}}')" id="click">Delete</a> {{!-- que cada boton delete esté asignado al ID del producto --}}
             </div>
             </div>
             {{/each}}
+            <div>
+            <nav aria-label="Navigation row">
+            <ul class="pagination">
+                {{#if pagination.hasPrevPage}}
+                    <li class="page-item"><a class="page-link" href="{{pagination.prevPageUrl}}"><<</a></li>
+                {{else}}
+                    <li class="page-item disabled"><a class="page-link" href="{{pagination.prevPageUrl}}"><<</a></li>
+                {{/if}}
+                
+                {{#each pagination.pagesArray}}
+                    <li class="page-item"><a class="page-link" href="{{baseUrl}}?page={{this.index}}">{{this.indexPgBar}}</a></li>
+                {{/each}}
+
+                {{#if pagination.hasNextPage}}
+                    <li class="page-item"><a class="page-link" href="{{pagination.nextPageUrl}}">>></a></li>
+                {{else}}
+                    <li class="page-item disabled"><a class="page-link" href="{{pagination.nextPageUrl}}">>></a></li>
+                {{/if}}
+            </ul>
+        </div>
         </div>
     </div>
+    
     <div class="border border-primary">
         <h3>Add Product</h3>
         <form class="row g-4" class="border">
@@ -52,8 +74,8 @@
             <div class="col-md-3">
                 <label for="inputState" class="form-label">Status</label>
                 <select id="status" class="form-select">
-                    <option>True</option>
-                    <option>False</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -61,41 +83,52 @@
                 <input type="text" class="form-control" id="category">
             </div>
             <div class="col-12">
-            <button type="submit" class="btn btn-primary" onclick="addProduct()" >Save</button>
+            <button type="submit" class="btn btn-primary" onclick=add_product() id="save-button">Save</button>
             </div>
         </form>
+         <form>
+        <h3>Delete Product</h3>
+        <div class="col-md-3">
+            <label  class="form-label">ID to Delete</label>
+            <input type="text" class="form-control" id="idToDelete">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Delete</button>
+        </div>
+    </form>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const socket = io('http://localhost:1010');
-
-        socket.emit('event_cl01', 'CLIENT 01 TRYING TO CONNECT');
+        const socket = io('http://localhost:3000');
+          
 
         socket.on('connect', () => {
-            socket.emit('event_product', 'This is a message from products');
-            socket.on('server_confirm', (msg) => {
-                console.log('Server confirmed connection - FROM RTPHDB');
-            })
-        });
-        
-        function deleteProduct(id) {
-        socket.emit('delete_product', id);
-        console.log('DeleteProduct() function activates on click', id)
-        };
+  socket.on('server_confirm', (data) => {
+    console.log("El servidor ha confirmado la conexión");
+    console.log(data);
+  });
+});
 
-        function addProduct() {
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
-            const price = document.getElementById('price').value;
-            const thumbnail = document.getElementById('thumbnail').value;
-            const code = document.getElementById('code').value;
-            const stock = document.getElementById('stock').value;
-            const status = document.getElementById('status').value;
-            const category = document.getElementById('category').value;
+const saveButton = document.getElementById('save-button');
+saveButton.addEventListener('click', (event) => add_product(event));
 
-        const product = {title, description, price, thumbnail, code, stock, status, category};
-            socket.emit('add_product', product);
-            console.log('Addproduct() function activates on click', product )
-        };
+function add_product() {
+  const title = document.getElementById('title').value;
+  const description = document.getElementById('description').value;
+  const price = document.getElementById('price').value;
+  const thumbnail = document.getElementById('thumbnail').value;
+  const code = document.getElementById('code').value;
+  const stock = document.getElementById('stock').value;
+  const status = document.getElementById('status').value;
+  const category = document.getElementById('category').value;
+  const product = { title, description, price, thumbnail, code, stock, status, category };
+
+  socket.emit('add_product', product);
+  console.log('Addproduct function activates on click', product);
+}
         
-    </script>
+function deleteProduct(id) {
+    socket.emit('delete_product', id);
+    console.log('DeleteProduct() function activates on click', id)
+    };
+</script>

@@ -3,11 +3,12 @@ import { Router as expressRouter} from 'express';
 const cartRouter = expressRouter();
 import cartsManager from './carts.class.js';
 import bodyParser from 'body-parser';
+import cartsManagerDB from './carts.dbclass.js';
 
 
 const cartsRouter = (io) => {
 
-    const newCarts = new cartsManager();
+    const newCarts = new cartsManagerDB();
 
     cartRouter.use(bodyParser.urlencoded({ extended: true }));
     cartRouter.use(express.json());
@@ -15,7 +16,9 @@ const cartsRouter = (io) => {
     const carts = [];
     
     cartRouter.get('/carts', (req,res) => {
+        res.send(newCarts.find())
         res.status(200).send('CARTS INICIADO');
+    
     });
     
     cartRouter.post('/carts', async (req,res) => {
@@ -32,7 +35,6 @@ const cartsRouter = (io) => {
     cartRouter.get('/carts/:cid', async (req, res) => {
         const cartId = req.params;
         try {
-            await newCarts.load();
             let getCart = await newCarts.getCartById(parseInt(cartId.cid)); 
     
         res.status(200).send(getCart)
